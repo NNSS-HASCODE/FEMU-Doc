@@ -18,11 +18,11 @@
 
 ​	NVMe 模块、FTL 线程通过队列进行交互，以一个 I/O 请求为例，NVMe（前端）、闪存（后端）和FTL模块协作流程如下：
 
-<img src="/images/femu_1.png" style="zoom: 67%;" />
+<img src="./images/femu_1.png" style="zoom: 67%;" />
 
 ​	基于这三个模块，FEMU代码总体目录构成如下：
 
-<img src="/images/femu_2.png" alt="image-20240509181148620" style="zoom:67%;" />
+<img src="./images/femu_2.png" alt="image-20240509181148620" style="zoom:67%;" />
 
 - `backend/` 包含了用于保存模拟的 SSD 数据的内存后端代码，实现数据读写的功能模拟。
 - `bbssd/` 包含了 blackbox SSD 对应的实现，blackbox 就是普通的黑盒 SSD，也就是 SSD 的管理是由内部的 FTL 进行的。该目录下主要包含的是 FTL 的实现。
@@ -95,7 +95,7 @@
 
 ​	其中nvme_io_cmd()到nvme_rw()的过程会经过一层与使用的SSD模式相关的中间函数，例如在bbssd模式下，通过n->ext_ops注册bb模式的函数后，完整路径为nvme_io_cmd->bb_io_cmd->bb_nvme_rw->nvme_rw。
 
-<img src="/images/nvme_2.png" alt="img" style="zoom: 67%;" />
+<img src="./images/nvme_2.png" alt="img" style="zoom: 67%;" />
 
 ​	由于FEMU是模拟器，当请求从主机传递到FEMU模拟的NVMe SSD时，实际的设备I/O（即数据存储）已经完成。主机想要保存的数据已经通过`backend_rw()`函数存储到DRAM后端中，之后的流程都是为了模拟I/O延迟。这一点使FEMU不仅可以真实地存储数据和重放追踪，还可以运行基准测试等负载生成器。
 
@@ -109,7 +109,7 @@
 
 ​	大量的闪存单元按照一定的结构组织成闪存芯片，如下图。一般而言， 一个芯片（chip）包含一个或者多个（2 个到 16 个）晶圆（die），晶圆具备独立的 I/O 和控制逻辑电路，是独立执行命令和报告操作状态的最小单位；每个晶圆包含多个 （2 个或者 4 个）分组（plane），分组设置有两个页大小的寄存器，数据通过 I/O 信 号线经由寄存器从闪存读出或者向闪存写入；每个分组包含成百上千个块（block）； 每个块包含成百上千个页（page），每个页包含一个数据区和一个额外存储区，通常 所说的页大小是指数据区的大小。数据区用于存储数据，大小一般是 8KB 或者 16KB， 额外存储区对用户是不可用的，用于存储数据的纠错码冗余和逻辑页号等元数据， 大小一般是数据区大小的 1/8 左右。
 
-<img src="/images/flash_1.png" alt="image-20240516184705839" style="zoom:70%;" />
+<img src="./images/flash_1.png" alt="image-20240516184705839" style="zoom:70%;" />
 
 ## 3.2 FEMU backend支持
 
@@ -135,7 +135,7 @@ int init_dram_backend(SsdDramBackend **mbe, int64_t nbytes)
 
 ​	此外，初始化函数还调用SSD中ssd_init_nand_page等一系列初始化函数，通过嵌套调用以及调用g_malloc0函数对于内存进行分配，最终达到backend支持。初始化函数形成调用关系如下图所示。
 
-<img src="/images/flash_2.png" alt="image-20240419122620816" style="zoom: 80%;" />
+<img src="./images/flash_2.png" alt="image-20240419122620816" style="zoom: 80%;" />
 
 # 4 FEMU FTL
 
@@ -214,7 +214,7 @@ int init_dram_backend(SsdDramBackend **mbe, int64_t nbytes)
 
 ​	根据以上分析，有时延模拟的命令时间图如下所示，时间轴上空闲部分则为命令在lun空闲时间或命令的时间戳限制下的等待时间。
 
-<img src="/images/ftl_1.png" alt="image-20240517104933805" style="zoom: 80%;" />
+<img src="./images/ftl_1.png" alt="image-20240517104933805" style="zoom: 80%;" />
 
 ## 4.5 读写请求处理
 
@@ -376,7 +376,7 @@ cd build-femu
 
 ​	初始化开始的入口在`hw/femu/femu.c`文件中，具体流程如下：
 
-<img src="/images/Initialize_1.png" alt="img" style="zoom: 65%;" />
+<img src="./images/Initialize_1.png" alt="img" style="zoom: 65%;" />
 
 ​	首先是由 QEMU 触发的初始化，`femu_class_init()` 为入口，在该过程中会设置 PCIe 配置空间中的固定信息，注册对应的函数；部分代码如下：
 
